@@ -157,6 +157,7 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
           // Automatically start speaking the response after it's received
           chunkAndSpeak(result);
         } catch (error) {
+          console.error(error);
           message.error("Failed to generate response. Please try again.");
         } finally {
           setIsResponding(false);
