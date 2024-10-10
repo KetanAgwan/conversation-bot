@@ -10,17 +10,19 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.1",
+    "@google/generative-ai": "^0.21.0",
     "antd": "^5.21.2",
     "next": "14.2.14",
+    "node": "^20.18.0",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/node": "^20.16.10",
+    "@types/react": "^18.3.11",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.14",
-    "typescript": "^5"
+    "typescript": "^5.6.2"
   }
 }
