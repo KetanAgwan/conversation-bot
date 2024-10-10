@@ -34,7 +34,7 @@ export function useGeminiAPI(): UseGeminiAPIResult {
       try {
         const result = await model.generateContent(
           prompt +
-            "you can say in it 2 to 3 sentences only yu don thave to generate a huge response for this. But is it really crucial to give a huge response then you can give it."
+            "you can say in it 2 to 3 sentences only you dont have to generate a huge response for this. But is it really crucial to give a huge response then you can give it."
         );
         const generatedText = result.response.text();
         setResponse(generatedText);

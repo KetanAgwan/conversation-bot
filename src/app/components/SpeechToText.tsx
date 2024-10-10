@@ -13,14 +13,49 @@ import { useGeminiAPI } from "../utils/googleGemini"; // Make sure this path is 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-interface IWebkitSpeechRecognition extends SpeechRecognition {
+// Updated type definitions
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   interimResults: boolean;
+  lang: string;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onend: () => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onstart: () => void;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
 }
 
 declare global {
   interface Window {
-    webkitSpeechRecognition: new () => IWebkitSpeechRecognition;
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
   }
 }
 
@@ -40,10 +75,9 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
       typeof window !== "undefined" &&
       ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
     ) {
-      const SpeechRecognition =
+      const SpeechRecognitionConstructor =
         window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current =
-        new SpeechRecognition() as IWebkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognitionConstructor();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = true;
 
@@ -60,8 +94,10 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
         let finalTranscript = "";
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
+          const result = event.results.item(i);
+          const transcript = result[0].transcript;
+
+          if (result.isFinal) {
             finalTranscript += transcript + " ";
           } else {
             interimTranscript += transcript;
@@ -105,32 +141,45 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
     }
   }, [initializeSpeechRecognition]);
 
-  // Handles speech synthesis (AI response speaking)
   const chunkAndSpeak = useCallback((text: string): void => {
-    const chunkSize = 25;
+    const chunkSize = 25; // Split text into chunks of 25 words
     const words = text.split(" ");
-    const chunks = [];
+    const chunks: string[] = [];
+
+    // Create the chunks of words
     for (let i = 0; i < words.length; i += chunkSize) {
       chunks.push(words.slice(i, i + chunkSize).join(" "));
     }
 
+    // Function to speak each chunk
     const speakChunk = (chunkIndex: number, voices: SpeechSynthesisVoice[]) => {
       if (chunkIndex >= chunks.length) {
-        setIsSpeaking(false);
+        setIsSpeaking(false); // End speaking when all chunks are done
         return;
       }
+
       const utterance = new SpeechSynthesisUtterance(chunks[chunkIndex]);
-      utterance.voice = voices[0]; // You can customize this if you need a specific voice
-      utterance.onend = () => speakChunk(chunkIndex + 1, voices);
+      utterance.voice = voices[0]; // Customize voice if needed
+      utterance.rate = 1.1; // Slightly faster rate to reduce pauses
+
+      // Play the next chunk immediately after the current one finishes
+      utterance.onend = () => {
+        // Very short delay between chunks (1ms) to reduce noticeable pause
+        setTimeout(() => speakChunk(chunkIndex + 1, voices), -1);
+      };
+
+      // Speak the current chunk
       window.speechSynthesis.speak(utterance);
     };
 
     const voices = window.speechSynthesis.getVoices();
+
+    // Start speaking chunks if voices are already loaded
     if (voices.length > 0) {
       speakChunk(0, voices);
       setIsSpeaking(true);
     } else {
-      // Wait for voices to load
+      // Wait for voices to load if they aren't ready yet
       window.speechSynthesis.onvoiceschanged = () => {
         const loadedVoices = window.speechSynthesis.getVoices();
         speakChunk(0, loadedVoices);
@@ -146,7 +195,7 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
     }
   };
 
-  // useEffect to trigger response generation once the `text` state is updated
+  // useEffect to trigger response generation once the text state is updated
   useEffect(() => {
     const generateAIResponse = async () => {
       if (text.trim()) {
@@ -199,7 +248,7 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
             level={3}
             style={{ textAlign: "center", marginBottom: "20px" }}
           >
-            Coversation Bot
+            Conversation Bot
           </Title>
 
           <TextArea
