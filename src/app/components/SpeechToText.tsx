@@ -76,8 +76,6 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
-        // We don't need to handle text processing here anymore
-        // It will be handled via the useEffect below
       };
     } else {
       console.error("Speech recognition not supported in this browser");
@@ -173,77 +171,107 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
   }, [text, generateContent, isListening, chunkAndSpeak]);
 
   return (
-    <Card style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <Title level={2} style={{ textAlign: "center", margin: 0 }}>
-          Voice Recognition & Response
-        </Title>
-
-        <TextArea
-          value={text + interimResult}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Your speech will appear here..."
-          autoSize={{ minRows: 4, maxRows: 6 }}
-          maxLength={500}
-          showCount
-        />
-
-        <div style={{ textAlign: "center" }}>
-          {isListening ? (
-            <AudioOutlined
-              style={{
-                fontSize: 48,
-                color: "#1890ff",
-                animation: "pulse 2s infinite",
-              }}
-            />
-          ) : (
-            <AudioMutedOutlined style={{ fontSize: 48, color: "#d9d9d9" }} />
-          )}
-        </div>
-
-        <Space style={{ width: "100%", justifyContent: "center" }}>
-          <Button
-            type="primary"
-            onClick={startListening}
-            disabled={isListening || isResponding}
-            style={{ width: 120 }}
+    <div
+      className="page"
+      style={{
+        backgroundColor: "#ededed",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+        boxSizing: "border-box",
+      }}
+    >
+      <Card
+        style={{
+          width: "100%",
+          maxWidth: 600,
+          marginTop: "-250px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          padding: "20px",
+          borderRadius: "10px",
+        }}
+      >
+        <Space direction="vertical" size="large" style={{ width: "100%" }}>
+          <Title
+            level={3}
+            style={{ textAlign: "center", marginBottom: "20px" }}
           >
-            Start
-          </Button>
-          <Button
-            onClick={stopSpeaking}
-            disabled={!isSpeaking}
-            style={{ width: 120 }}
-            icon={<StopOutlined />}
-          >
-            Stop Speaking
-          </Button>
-        </Space>
+            Coversation Bot
+          </Title>
 
-        {response && (
-          <Card
-            title="AI Response"
-            extra={
-              <Button
-                icon={<SoundOutlined />}
-                onClick={() => chunkAndSpeak(response)}
-              >
-                Speak Again
-              </Button>
-            }
-          >
-            <p>{response}</p>
-          </Card>
-        )}
+          <TextArea
+            value={text + interimResult}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Your speech will appear here..."
+            autoSize={{ minRows: 4, maxRows: 6 }}
+            maxLength={500}
+            showCount
+            style={{
+              fontSize: "16px",
+              padding: "10px",
+              borderColor: "#d9d9d9",
+            }}
+          />
 
-        {(isResponding || isLoading) && (
           <div style={{ textAlign: "center" }}>
-            <SoundOutlined spin style={{ fontSize: 24 }} />
-            <p>Generating response...</p>
+            {isListening ? (
+              <AudioOutlined
+                style={{
+                  fontSize: 48,
+                  color: "#52c41a",
+                  animation: "pulse 2s infinite",
+                }}
+              />
+            ) : (
+              <AudioMutedOutlined style={{ fontSize: 48, color: "#d9d9d9" }} />
+            )}
           </div>
-        )}
-      </Space>
-    </Card>
+
+          <Space style={{ width: "100%", justifyContent: "center" }}>
+            <Button
+              type="primary"
+              onClick={startListening}
+              disabled={isListening || isResponding}
+              style={{ width: 150 }}
+            >
+              Start Recognition
+            </Button>
+            <Button
+              onClick={stopSpeaking}
+              disabled={!isSpeaking}
+              style={{ width: 120 }}
+              icon={<StopOutlined />}
+            >
+              Stop Speaking
+            </Button>
+          </Space>
+
+          {response && (
+            <Card
+              title="AI Response"
+              extra={
+                <Button
+                  icon={<SoundOutlined />}
+                  onClick={() => chunkAndSpeak(response)}
+                >
+                  Speak Again
+                </Button>
+              }
+            >
+              <p>{response}</p>
+            </Card>
+          )}
+
+          {(isResponding || isLoading) && (
+            <div style={{ textAlign: "center" }}>
+              <SoundOutlined spin style={{ fontSize: 24 }} />
+              <p>Generating response...</p>
+            </div>
+          )}
+        </Space>
+      </Card>
+    </div>
   );
 }

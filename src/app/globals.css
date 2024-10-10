@@ -5,7 +5,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #ededed;
     --foreground: #ededed;
   }
 }
@@ -35,8 +35,26 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+
+.page {
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(45deg, #d2002a, #7462ff, #f48e21);
+  animation: color 10s ease-in-out infinite;
+  background-size: 400% 300%;
+}
+
+
+@keyframes color {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
   }
 }

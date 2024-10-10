@@ -1,9 +1,9 @@
-import AntDesignVoiceRecognition from "./components/SpeechToText"
+import AntDesignVoiceRecognition from "./components/SpeechToText";
 
 export default function Page() {
   return (
-    <div style={{ padding: '2rem' }}>
+    <div>
       <AntDesignVoiceRecognition />
     </div>
-  )
+  );
 }
