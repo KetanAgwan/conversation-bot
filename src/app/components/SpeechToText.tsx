@@ -195,6 +195,10 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
     }
   };
 
+  const formatBoldText = (text: string): string => {
+    return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  };
+
   // useEffect to trigger response generation once the text state is updated
   useEffect(() => {
     const generateAIResponse = async () => {
@@ -236,11 +240,12 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
       <Card
         style={{
           width: "100%",
-          maxWidth: 600,
+          maxWidth: "90%", // Make the card width responsive
           marginTop: "-250px",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           padding: "20px",
           borderRadius: "10px",
+          maxHeight: "70vh", // Keep max height for the main card
         }}
       >
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
@@ -300,17 +305,28 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
 
           {response && (
             <Card
-              title="AI Response"
+              title="Response"
               extra={
                 <Button
                   icon={<SoundOutlined />}
-                  onClick={() => chunkAndSpeak(response)}
+                  onClick={() => chunkAndSpeak(formatBoldText(response))}
                 >
                   Speak Again
                 </Button>
               }
+              style={{
+                maxWidth: "100%", // Make it responsive
+                padding: "10px", // Adjust padding
+              }}
             >
-              <p>{response}</p>
+              <p
+                style={{
+                  margin: 0, // Remove default margin
+                  whiteSpace: "pre-wrap", // Maintain formatting
+                  wordWrap: "break-word", // Allow long words to break to the next line
+                }}
+                dangerouslySetInnerHTML={{ __html: formatBoldText(response) }}
+              />
             </Card>
           )}
 

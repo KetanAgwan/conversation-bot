@@ -58,3 +58,12 @@ a {
     background-position: 0% 50%;
   }
 }
+
+@media (max-width: 768px) {
+  .page {
+    padding: 10px;
+  }
+  .response-card {
+    max-height: 60vh;
+  }
+}
