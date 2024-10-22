@@ -235,23 +235,29 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
         justifyContent: "center",
         padding: "20px",
         boxSizing: "border-box",
+        width: "100vw",
       }}
     >
       <Card
         style={{
           width: "100%",
-          maxWidth: "90%", // Make the card width responsive
-          marginTop: "-250px",
+          maxWidth: "800px",
+          margin: "auto",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           padding: "20px",
           borderRadius: "10px",
-          maxHeight: "70vh", // Keep max height for the main card
+          overflowY: "auto",
+          maxHeight: "90vh",
         }}
       >
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
           <Title
             level={3}
-            style={{ textAlign: "center", marginBottom: "20px" }}
+            style={{
+              textAlign: "center",
+              marginBottom: "20px",
+              fontSize: "clamp(1.5rem, 4vw, 2rem)",
+            }}
           >
             Conversation Bot
           </Title>
@@ -260,11 +266,11 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
             value={text + interimResult}
             onChange={(e) => setText(e.target.value)}
             placeholder="Your speech will appear here..."
-            autoSize={{ minRows: 4, maxRows: 6 }}
+            autoSize={{ minRows: 3, maxRows: 6 }}
             maxLength={500}
             showCount
             style={{
-              fontSize: "16px",
+              fontSize: "clamp(14px, 3vw, 16px)",
               padding: "10px",
               borderColor: "#d9d9d9",
             }}
@@ -274,29 +280,43 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
             {isListening ? (
               <AudioOutlined
                 style={{
-                  fontSize: 48,
+                  fontSize: "clamp(36px, 8vw, 48px)",
                   color: "#52c41a",
                   animation: "pulse 2s infinite",
                 }}
               />
             ) : (
-              <AudioMutedOutlined style={{ fontSize: 48, color: "#d9d9d9" }} />
+              <AudioMutedOutlined
+                style={{ fontSize: "clamp(36px, 8vw, 48px)", color: "#d9d9d9" }}
+              />
             )}
           </div>
 
-          <Space style={{ width: "100%", justifyContent: "center" }}>
+          <Space
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <Button
               type="primary"
               onClick={startListening}
               disabled={isListening || isResponding}
-              style={{ width: 150 }}
+              style={{
+                width: "clamp(140px, 40%, 150px)",
+                marginBottom: "10px",
+              }}
             >
               Start Recognition
             </Button>
             <Button
               onClick={stopSpeaking}
               disabled={!isSpeaking}
-              style={{ width: 120 }}
+              style={{
+                width: "clamp(140px, 35%, 120px)",
+                marginBottom: "10px",
+              }}
               icon={<StopOutlined />}
             >
               Stop Speaking
@@ -310,20 +330,24 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
                 <Button
                   icon={<SoundOutlined />}
                   onClick={() => chunkAndSpeak(formatBoldText(response))}
+                  style={{ fontSize: "clamp(12px, 2.5vw, 14px)" }}
                 >
                   Speak Again
                 </Button>
               }
               style={{
-                maxWidth: "100%", // Make it responsive
-                padding: "10px", // Adjust padding
+                width: "100%",
+                padding: "10px",
+                maxHeight: "400px",
+                // overflow: "hidden",
               }}
             >
               <p
                 style={{
-                  margin: 0, // Remove default margin
-                  whiteSpace: "pre-wrap", // Maintain formatting
-                  wordWrap: "break-word", // Allow long words to break to the next line
+                  margin: 0,
+                  whiteSpace: "pre-wrap",
+                  wordWrap: "break-word",
+                  fontSize: "clamp(14px, 3vw, 16px)",
                 }}
                 dangerouslySetInnerHTML={{ __html: formatBoldText(response) }}
               />
@@ -332,8 +356,13 @@ export default function EnhancedVoiceRecognition(): JSX.Element {
 
           {(isResponding || isLoading) && (
             <div style={{ textAlign: "center" }}>
-              <SoundOutlined spin style={{ fontSize: 24 }} />
-              <p>Generating response...</p>
+              <SoundOutlined
+                spin
+                style={{ fontSize: "clamp(20px, 4vw, 24px)" }}
+              />
+              <p style={{ fontSize: "clamp(14px, 3vw, 16px)" }}>
+                Generating response...
+              </p>
             </div>
           )}
         </Space>
